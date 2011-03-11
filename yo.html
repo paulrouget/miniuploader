@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+
+<!-- This is the shortest Image Uploader ever :)
+     And you can even make it shorter if you don't
+     want all the drag'n drop thing. -->
+
+<!--
+AUTHOR: @paulrouget <paul@mozilla.com>
+
+LICENSE:
+    DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
+
+    Everyone is permitted to copy and distribute verbatim or modified
+    copies of this license document, and changing it is allowed as long
+    as the name is changed.
+
+    DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
+    TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
+
+    0. You just DO WHAT THE FUCK YOU WANT TO. -->
+
+
+<!-- One single file. This one. -->
+
+
+<meta charset="utf8">
+<title>Yo.</title>
+
+<!-- This is a simple image uploader, with drag'n drop -->
+<!-- Also, if you want to do more, read this: https://hacks.mozilla.org/2011/01/how-to-develop-a-html5-image-uploader/ -->
+
+<!-- You can use this code whereever you want (your own domain)
+     No server side code needed. -->
+
+<!-- The image is sent to imgur.com because they allow Cross Domain XMLHttpRequest.
+     You'll need a key: http://api.imgur.com/ -->
+
+<!-- So this is the dropbox, with a <button> in case of the user doesn't
+     have icons. Yes. Think about Fvwm (Linux) users like me -->
+<div>DROP!<button onclick="document.querySelector('input').click()">Or click</button></div>
+<input style="visibility: collapse; width: 0px;" type="file" onchange="upload(this.files[0])">
+
+<!-- So here is the magic -->
+<script>
+
+    /* Drag'n drop stuff */
+    window.ondragover = function(e) {e.preventDefault()}
+    window.ondrop = function(e) {e.preventDefault(); upload(e.dataTransfer.files[0]); }
+    function upload(file) {
+
+        /* Is the file an image? */
+        if (!file || !file.type.match(/image.*/)) return;
+
+        /* It is! */
+        document.body.className = "uploading";
+
+        /* Lets build a FormData object*/
+        var fd = new FormData(); // I wrote about it: https://hacks.mozilla.org/2011/01/how-to-develop-a-html5-image-uploader/
+        fd.append("image", file); // Append the file
+        fd.append("key", "6528448c258cff474ca9701c5bab6927"); // Get your own key http://api.imgur.com/
+        var xhr = new XMLHttpRequest(); // Create the XHR (Cross-Domain XHR FTW!!!) Thank you sooooo much imgur.com
+        xhr.open("POST", "http://api.imgur.com/2/upload.json"); // Boooom!
+        xhr.onload = function() {
+            // Big win!
+            document.querySelector("#link").href = JSON.parse(xhr.responseText).upload.links.imgur_page;
+            document.body.className = "uploaded";
+        }
+        // Ok, I don't handle the errors. An exercice for the reader.
+
+        /* And now, we send the formdata */
+        xhr.send(fd);
+    }
+</script>
+
+<!-- Bla bla bla stuff ... -->
+
+<style>
+    body {text-align: center; padding-top: 100px;}
+    div { border: 10px solid black; text-align: center; line-height: 100px; width: 200px; margin: auto; font-size: 40px; display: inline-block;}
+    #link, p , div {display: none}
+    div {display: inline-block;}
+    .uploading div {display: none}
+    .uploaded div {display: none}
+    .uploading p {display: inline}
+    .uploaded #link {display: inline}
+    em {position: absolute; bottom: 0; right: 0}
+</style>
+
+<p>Uploading...</p>
+<a id="link">It's online!!!</a>
+
+<em>Look at the source code for more information. By <a href="http://twitter.com/paulrouget">@paulrouget</a>.</em>
