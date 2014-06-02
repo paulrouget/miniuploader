@@ -57,12 +57,12 @@ LICENSE:
         /* Lets build a FormData object*/
         var fd = new FormData(); // I wrote about it: https://hacks.mozilla.org/2011/01/how-to-develop-a-html5-image-uploader/
         fd.append("image", file); // Append the file
-        fd.append("key", "6528448c258cff474ca9701c5bab6927"); // Get your own key http://api.imgur.com/
+        xhr.setRequestHeader('Authorization', 'Client-ID <your_client-id_here>'); // Get your own Client-ID at http://api.imgur.com/
         var xhr = new XMLHttpRequest(); // Create the XHR (Cross-Domain XHR FTW!!!) Thank you sooooo much imgur.com
-        xhr.open("POST", "http://api.imgur.com/2/upload.json"); // Boooom!
+        xhr.open("POST", "http://api.imgur.com/3/image.json"); // Boooom!
         xhr.onload = function() {
             // Big win!
-            document.querySelector("#link").href = JSON.parse(xhr.responseText).upload.links.imgur_page;
+            document.querySelector("#link").href = JSON.parse(xhr.responseText).data.link;
             document.body.className = "uploaded";
         }
         // Ok, I don't handle the errors. An exercice for the reader.
